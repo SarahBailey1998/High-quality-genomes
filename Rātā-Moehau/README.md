@@ -1,6 +1,6 @@
 # Rātā Moehau genomics
 
-This is a [Manaaki Whenua - Landcare Research](https://landcareresearch.co.nz/) and [Genomics Aotearoa](https://www.genomics-aotearoa.org.nz/) High-Quality Genomes project for the Aotearoa endemic plant rātā Moehau, *Metrosideros bartlettii*. This research was funded by the New Zealand Ministry of Business, Innovation and Employment through New Zealand's Biological Heritage National Science Challenge, the Strategic Science Investment Fund for Crown Research Institutes, and [Genomics Aotearoa](https://www.genomics-aotearoa.org.nz/).
+This is a [Manaaki Whenua - Landcare Research](https://landcareresearch.co.nz/) and [Genomics Aotearoa](https://www.genomics-aotearoa.org.nz/) High-Quality Genomes project for the Aotearoa endemic plant rātā Moehau, *Metrosideros bartlettii*. This research was funded by the New Zealand Ministry of Business, Innovation and Employment through New Zealand's Biological Heritage National Science Challenge, the Strategic Science Investment Fund for Crown Research Institutes, and Genomics Aotearoa.
 
 This work is associated with the publication: Prebble et al., 'Demographic history and genetic diversity of rātā Moehau (_Metrosideros bartlettii_; Myrtaceae), a critically endangered Aotearoa New Zealand endemic tree', in prep.
 
