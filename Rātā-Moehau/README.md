@@ -12,4 +12,4 @@ Outputs: Reference genome assembly and annotation, and species-wide SNPs for dem
 
 <img width="300" height="100" alt="MW_LR_Landscape_lge_blk" src="https://github.com/user-attachments/assets/84a38305-fb9d-47c4-8c3c-0a38a34df101" />
 
-<img width="300" height="100" alt="GA-logo" src="https://github.com/user-attachments/assets/1b8e3db6-9e4f-4413-bfd6-0e6ee0c70a48" />
+<img width="400" height="200" alt="GA-logo" src="https://github.com/user-attachments/assets/1b8e3db6-9e4f-4413-bfd6-0e6ee0c70a48" />
