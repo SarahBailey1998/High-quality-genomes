@@ -20,12 +20,27 @@ library(gridExtra)
 library(scales) # allows use of alpha to change plot opacity
 
 sessionInfo()
+#as at 3/10/2023 = R version 4.4.1 (2024-06-14 ucrt)
 
 setwd("T:/Lincoln/Projects A-E/DNA/Metrosideros/filtering")
 getwd()
 
 citation("gdsfmt")
+
+Xiuwen Zheng, David Levine, Jess Shen, Stephanie M. Gogarten, Cathy Laurie, Bruce S. Weir. A
+High-performance Computing Toolset for Relatedness and Principal Component Analysis of SNP Data.
+Bioinformatics 2012; doi: 10.1093/bioinformatics/bts606
+
+Xiuwen Zheng, Stephanie M. Gogarten, Michael Lawrence, Adrienne Stilp, Matthew P. Conomos, Bruce S. Weir,
+Cathy Laurie, David Levine. SeqArray -- A storage-efficient high-performance data format for WGS variant
+calls. Bioinformatics 2017; doi: 10.1093/bioinformatics/btx145
+
 citation("SNPRelate")
+
+Xiuwen Zheng, David Levine, Jess Shen, Stephanie M. Gogarten, Cathy Laurie, Bruce S. Weir. A
+High-performance Computing Toolset for Relatedness and Principal Component Analysis of SNP Data.
+Bioinformatics 2012; doi: 10.1093/bioinformatics/bts606
+
 citation("MASS")
 
 Venables, W. N. & Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth Edition. Springer, New
@@ -33,38 +48,55 @@ York. ISBN 0-387-95457-0
 
 ##Colours##
 
+selected_colours <- c("#009cbd", "#ebb700")
+color.gradient <- function(x, colors=selected_colours, colsteps=100) {
+  return( colorRampPalette(colors) (colsteps) [ findInterval(x,
+                                                             seq(min(x),max(x), length.out=colsteps)) ] )
+}
+x <- c((1:100)^2)
+
+selected_colours2 <- c("#009cbd","#ebb700")
+color.gradient2 <- function(x, colors=selected_colours2, colsteps=10) {
+  return( colorRampPalette(colors) (colsteps) [ findInterval(y,
+                                                             seq(min(y),max(y), length.out=colsteps)) ] )
+}
+y <- c((1:50)^2)
+
+mwlrcolsOG <- c("#009cbd", "#de7c00", "#b7db57", "#64a70b",  "#00c1d5", "#ebb700")
+
 mwlrcols <- c("#64a70b", "#898a8d", "#009cbd","#ebb700")
 
 #import_vcfs
 vcf.strict <- "rata-moehau-only_VariantCalls_20x_coverage_0site_missing_maf0.0.bcf.recode_0.8LD_VariantCalls.vcf"
+vcf.highmaf<- "rata-moehau-only_VariantCalls_20x_coverage_0site_missing_maf0.25.bcf.recode_0.8LD_VariantCalls.vcf"
 
 showfile.gds(closeall=TRUE)
 snpgdsVCF2GDS(vcf.strict, "vcf.strict.gds", method="biallelic.only")
 snpgdsSummary("vcf.strict.gds")
 
+showfile.gds(closeall=TRUE)
+snpgdsVCF2GDS(vcf.highmaf, "vcf.highmaf.gds", method="biallelic.only")
+snpgdsSummary("vcf.highmaf.gds")
+
 #sanity_check
 # Open the GDS file
 genofile <- snpgdsOpen("vcf.strict.gds")
+genofile <- snpgdsOpen("vcf.highmaf.gds")
 
 head(genofile)
 
 #get population information
 #hmm. looks like Nat is pulling it from a file and then selecting which column
 #pop_code <- scan("T:/Lincoln/Projects A-E/DNA/Metrosideros/filtering/popmap.txt",
-#                 what=character())
+                 what=character())
 #table(pop_code)
 
 # Display the first six values
 #head(pop_code)
 
 #Ah, I think I need a file with JUST the popcode to make this work, other wise could do it another way, but try that first
-#pop_code <- scan("T:/Lincoln/Projects A-E/DNA/Metrosideros/filtering/pop_codes_only.txt",
-#                 what=character())
-
-#to redo with the auckland botanic garden sample re coded as Unuwhau
 pop_code <- scan("T:/Lincoln/Projects A-E/DNA/Metrosideros/filtering/pop_codes_only2.txt",
                  what=character())
-
 # Display the first six values
 head(pop_code)
 
@@ -78,7 +110,7 @@ pca <- snpgdsPCA(genofile, num.thread=4,autosome.only=F)
 pca$sample.id
 sample.id.filename <- sub(".*/","",pca$sample.id)
 
-# if we can assume the order of sample IDs is as the same as population codes (always double check this) 
+# if we can assume the order of sample IDs is as the same as population codes 
 cbind(sample.id,sample.id.filename, pop_code)
 
 # variance proportion (%)
@@ -102,11 +134,12 @@ tail(tab$pop)
 #plot(tab$EV2, tab$EV1, col=as.integer(tab$pop), 
 #     xlab="eigenvector 2", ylab="eigenvector 1")
 
-plot(tab$EV2, tab$EV1, col=alpha(mwlrcols[tab$pop],0.6), pch=19, 
+png("PCA-portrait-attempt2-nolegend.png", width = 450, height = 600)
+plot(tab$EV2, tab$EV1, col=alpha(mwlrcols[tab$pop],0.6), pch=19, cex=2, 
      xlab="PC 2", ylab="PC 1")
-legend("topleft", legend=levels(tab$pop), 
-       pch=19, col=mwlrcols[1:nlevels(tab$pop)])
-
+#legend("topleft", legend=levels(tab$pop), 
+#       pch=19, cex = 2, col=mwlrcols[1:nlevels(tab$pop)])
+dev.off()
 tab
 
 
@@ -176,12 +209,12 @@ install.packages("adegenet")
 library(vcfR)
 library(adegenet)
 
-x <- read.vcfR("rata-moehau-only_VariantCalls_20x_coverage_0site_missing_maf0.01.bcf.recode_0.8LD_VariantCalls.vcf", verbose=F)
+x <- read.vcfR("rata-moehau-only_VariantCalls_20x_coverage_0site_missing_maf0.25.bcf.recode_0.8LD_VariantCalls.vcf", verbose=F)
 y <- vcfR2genind(x, ploidy=2, return.alleles=TRUE)
 names(y)
 
 #pop_code <- scan("C:/Users/ForsdickN/OneDrive - MWLR/Documents/WHDP/pop-gen/second-round-analysis/export/corr-map2.txt",
-#                 what=character())
+                 what=character())
 y@pop
 y@pop <- as.factor(pop_code)
 y@pop
@@ -189,7 +222,7 @@ y@pop
 #Now we have the inputs loaded and are begin testing the analysis. First let's max out our PCs and set 2 expected clusters. How do our individuals group?
 #Jessie = should I try 3 clusters?
 ```{r prelimDAPC, dev=c('pdf'), fig.path='figures-strict/', ppi=500, units="in", fig.height=7, fig.width=10}
-grp <- find.clusters(y, max.n.= 30, n.pca=70, n.clust=3)
+grp <- find.clusters(y, max.n.= 10, n.pca=12, n.clust=3)
 #head(grp$grp, 10)
 grp$size
 head(grp$grp)
@@ -205,7 +238,7 @@ summary(dapc1)
 
 # unfortunately there's no argument to dictate the individual labels for assignplot().
 assignplot(dapc1)
-
+http://127.0.0.1:43243/graphics/plot_zoom_png?width=1200&height=900
 compoplot(dapc1, posi="bottomright", txt.leg=paste("Cluster", 1:2), lab="", col=mwlrcols, xlab="individuals")
 ```
 #Jessie looking at an adgenet tutorial
@@ -222,7 +255,7 @@ dist.genpop(pop)
 pop_dst<-dist(pop)
 ind_dist<-dist(y)
 is.euclid(ind_dist)
-
+ind_dist
 #k-means clustering
 
 find.clusters(y)
@@ -271,3 +304,115 @@ dapc2<-dapc(y)
 
 scatter(dapc1, scree.da=FALSE, bg="white", pch=20, cell=0, cstar=0, col=mwlrcols, solid=.4,
        cex=3,clab=0, leg=TRUE, txt.leg=paste("Cluster",1:4))
+
+
+##To make heterozygosity plots rather than homozygosity plots
+
+#```{r plot_het, eval=FALSE}
+# import het file
+het <- read.csv("rata-moehau-het-calc.csv", header = TRUE)#added in columns for population codes and IDs
+head(het)
+
+# get popcodes - file with two columns - col 1 is sample IDs, col 2 is population code
+#pop_code <- read.delim("C:/Users/ForsdickN/OneDrive - MWLR/Documents/WHDP/pop-gen/second-round-analysis/export/popmap.txt", header=FALSE)
+#head(pop_code)
+
+# add pop code to heterozygosity table - indiv IDs need to match 
+#het.pop <- left_join(pop_code, het, by = join_by(V1 == INDV))
+#het.pop <- na.omit(het.pop)
+#head(het.pop)
+
+
+# then do something like this but based on pop assignment (corrplot or map)
+library(ggplot2)
+library(dplyr)
+
+#summary(het.pop)
+
+
+pop.cols <- c("#64a70b", "#898a8d", "#009cbd","#ebb700")
+
+# observed proportion heterozygous
+het %>% group_by(POP) %>%
+  summarise(
+    count = n(),
+    "Mean proportion observed heterozygosity" = mean(PropOHET, na.rm = TRUE),
+    SD = sd(PropOHET, na.rm = TRUE),
+    Median = median(PropOHET, na.rm = TRUE),
+    IQR = IQR(PropOHET, na.rm = TRUE)
+  )
+
+pop.obs.het <- het %>%
+  ggplot(aes(x=POP, y=PropOHET, color = POP)) + 
+  geom_boxplot(outlier.shape=8,
+               outlier.size=2) +
+  ylim(0.3,0.6)+
+  geom_jitter(aes(color = POP,  alpha=0.8), size=3) +
+  theme_classic() +
+  theme(legend.position = "none") + 
+  labs(y= "Proportion of observed heterozygous SNPs")+
+  scale_color_manual(values=pop.cols)+
+  xlab("")
+
+png("obs-Het.png", width = 800, height = 1200)
+plot(pop.obs.het)
+dev.off()
+
+
+
+# expected proportion heterozygous
+
+het %>% group_by(POP) %>%
+  summarise(
+    count = n(),
+    "Mean proportion expected heterozygosity" = mean(PropEHET, na.rm = TRUE),
+    SD = sd(PropEHET, na.rm = TRUE),
+    Median = median(PropEHET, na.rm = TRUE),
+    IQR = IQR(PropEHET, na.rm = TRUE)
+  )
+
+pop.exp.het <- het %>%
+  ggplot(aes(x=POP, y=PropEHET, color = POP)) + 
+  geom_boxplot(outlier.shape=8,
+               outlier.size=2) +
+  ylim(0.2,0.6)+
+  geom_jitter(aes(color = POP,  alpha=0.8), size=3) +
+  theme_classic() +
+  theme(legend.position = "none") + 
+  labs(y= "Proportion of expected heterozygous SNPs")+
+  scale_color_manual(values=pop.cols)+
+  xlab("")
+pop.exp.het
+
+
+het %>% group_by(POP) %>%
+  summarise(
+    count = n(),
+    "Individual inbreeding coefficient" = mean(F, na.rm = TRUE),
+    SD = sd(F, na.rm = TRUE),
+    Median = median(F, na.rm = TRUE),
+    IQR = IQR(F, na.rm = TRUE)
+  )
+
+pop.F <- het %>%
+  ggplot(aes(x=POP, y=F, color = POP)) + 
+  geom_boxplot(outlier.shape=8,
+               outlier.size=2) +
+  geom_jitter(aes(color = POP,  alpha=0.8), size=3) +
+  ylim(-0.5,0.2) +
+  theme_classic() +
+  theme(legend.position = "none") + 
+  labs(y= "Individual inbreeding coefficient")+
+  scale_color_manual(values=pop.cols)+
+  xlab("")
+
+pop.F
+
+
+library(ggpubr)
+png("Het_and_inbreeding.png", width = 800, height =400)
+ggarrange(pop.obs.het, pop.F, nrow=1)
+dev.off()
+
+```
+
